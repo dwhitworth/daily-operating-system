@@ -24,6 +24,16 @@ strategic notes, open loops). There is no separate DOS/People directory.
 - Read the relevant file before any conversation involving that person
 - All people files follow the schema in `wiki/people/_template.md`
 
+**Hot/cold split — these files load at every Morning Triage, so the live half stays small:**
+
+- **`wiki/people/[name].md` (hot)** — `Role`, `Scope & Ownership`, `Working Style`, `Current Focus`, `Next Catchup Agenda`, `Open Loops`, `Strategic Notes`, and the **3 most recent** `Key Interactions`.
+- **`wiki/people/history/[name].md` (cold)** — older `Key Interactions` and the whole `## Recognition Log`. Same frontmatter; `type: people`. **Append new recognition entries straight here** — it's perf-review evidence, written often and read at calibration time, so it never needs to load at triage.
+- Adding a 4th `Key Interactions` entry? **Move the oldest to history in the same edit.**
+- **🔴 Never create a second H2 with a name that already exists** — duplicate `Recognition Log` / `Strategic Notes` sections accumulate silently. Append to the existing section; make the qualifier a bolded sub-line.
+- **Slice, don't read whole:** `./bin/section.sh wiki/people/[name].md "Next Catchup Agenda" "Open Loops"`. Any file over **~30k chars** gets a history pass.
+- `history/` is cold archive — **never scan it for staleness or recency signals**, and don't index it in `index.md`.
+- Rationale and the measured numbers: `DOS/CLAUDE.md` § Context hygiene.
+
 ---
 
 ## Core Operations

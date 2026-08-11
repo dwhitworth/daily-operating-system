@@ -28,22 +28,36 @@ It's driven by **`CLAUDE.md` instruction files** (loaded automatically by Claude
 ├── CLAUDE.md                  ← Root context (loaded every session)
 ├── SETUP-GUIDE.md             ← Full stand-it-up-yourself walkthrough
 ├── ADAPTING.md                ← How to fit it to your role / org / stack
+├── bin/
+│   ├── dos-lint.sh            ← Cheap health check — reports sizes/counts, loads no file bodies
+│   └── section.sh             ← Slice named H2 sections out of a file (read part, not whole)
 ├── DOS/
-│   └── CLAUDE.md              ← Operating modes (Triage / War Room / Wrap / Weekly / Deep Dive)
+│   ├── CLAUDE.md              ← Operating modes + the disposition rubric + context hygiene
+│   └── _examples/             ← A fictional "Acme Rockets" seed: Standing Brief, a journal day, a roll-up
 ├── Wiki/
 │   ├── CLAUDE.md              ← Wiki operating rules (Ingest / Query / Lint)
 │   └── wiki/
-│       ├── people/_template.md       ← Schema for a person page
-│       └── process/jira-mcp-usage.md ← Template: wire up your issue tracker
+│       ├── people/_template.md         ← Schema for a person page
+│       ├── people/_examples/           ← Fictional seed people files (hot/cold split shown)
+│       └── process/jira-mcp-usage.md   ← Template: wire up your issue tracker
 └── .claude/
+    ├── settings.json          ← Read-only issue-tracker permission allowlist (no identifiers)
     └── commands/              ← The slash commands that drive the whole thing
-        ├── triage.md          ← /triage      — morning battle card
-        ├── daily-wrap.md      ← /daily-wrap  — end-of-day journal + state update
+        ├── triage.md          ← /triage       — morning battle card
+        ├── daily-wrap.md      ← /daily-wrap   — end-of-day journal + state update
         ├── weekly-rollup.md   ← /weekly-rollup
-        ├── weekly-scan.md     ← /weekly-scan — hygiene + recognition-drought check
-        ├── manager-1-1.md     ← /manager-1-1 — 1:1 prep from a person's file
+        ├── weekly-scan.md     ← /weekly-scan  — hygiene + recognition-drought check
+        ├── manager-1-1.md     ← /manager-1-1  — 1:1 prep from a person's file
+        ├── prep.md            ← /prep         — fast "what's top of mind?" doorway briefing
+        ├── todos.md           ← /todos        — regenerate the terse TODO board view
+        ├── dos-lint.md        ← /dos-lint     — monthly DOS health check
         └── wiki-ingest.md / wiki-query.md / wiki-lint.md
 ```
+
+> A fictional **`_examples/`** seed set ships so the system is demonstrable out of the box —
+> a made-up company ("Acme Rockets"), three people files, a Standing Brief, a journal day, and
+> a weekly roll-up. Read them to see the conventions in action, then delete the `_examples/`
+> directories once you've created your own.
 
 ## The core loop
 
@@ -57,6 +71,34 @@ It's driven by **`CLAUDE.md` instruction files** (loaded automatically by Claude
    runs a recognition scan, and commits.
 4. **Continuously** — the **Wiki** accumulates durable knowledge; **people files** are the
    single source of truth for everyone you work with; **memory** persists across sessions.
+
+## The ideas that make it work
+
+Most of the value isn't the commands — it's a handful of disciplines the instruction files
+enforce, each one a scar from a specific failure:
+
+- **The disposition rubric — what earns a checkbox.** Every observation wants to become a
+  `- [ ]`; left unchecked, the list grew to ~319 open items while the real deliverables sat
+  buried. The fix: a checkbox requires an **owner, a venue, and a by-when**. Missing any one,
+  it's not a task — it's a *trip-wire* or a *note*. The question is never "is this important?"
+  (everything is) but **"who moves next, and what unblocks it?"**
+- **Hot/cold context hygiene.** Files loaded every session ("hot") are kept small; everything
+  else is "cold," read on demand by a named command. Born from a real blow-up: the standing
+  brief hit 64k tokens and a single morning triage loaded ~144k tokens *before doing any work*,
+  forcing mid-task compaction. Two costs, not one — compaction **and** latency (editing a big
+  hot file busts the prompt cache).
+- **Trip-wires.** "*If `<named event>`, then `<action>`.*" No checkbox, no decay, no guilt.
+  Triage already reads your calendar and board, so it fires the trip-wire on the one day it's
+  actionable — strictly better than a checkbox that surfaces on 40 wrong days and gets skimmed.
+- **Verify before asserting.** Never state an inference in the register of a fact. A claim
+  inside a document is not verification; a status line goes stale; "access was granted" ≠ "the
+  button exists." If it's checkable and load-bearing, check it.
+- **Write less than you think.** A 1:1 write-up should land in ~2–4k chars — reformatting a
+  transcript and calling it synthesis is the named anti-pattern. The cost isn't disk, it's the
+  attention those files consume every time they load.
+- **The lint reads a script, not the files.** `/dos-lint` runs `bin/dos-lint.sh`, which reports
+  sizes and counts without loading any file bodies — *a lint that loads 60k tokens to complain
+  about file sizes is the problem wearing a lab coat.*
 
 ## Design principles
 

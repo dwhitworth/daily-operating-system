@@ -11,18 +11,18 @@ Invoked automatically by `/triage` on Mondays (the scan's "This Week's Top 3" fo
    - Read the most recent journal entry
    - Read `Wiki/index.md` to see all tracked pages
 
-2. **Scan all `Next Catchup Agenda` blocks.** For each file in `Wiki/wiki/people/`:
-   - Read the file
+2. **Scan all `Next Catchup Agenda` blocks.** ⚠️ **Do NOT read all people files whole — with ~100 files that's ~120k tokens and it will force a compaction.** Slice the section instead:
+   - `./bin/section.sh Wiki/wiki/people/<name>.md "Next Catchup Agenda"` per file, or grep across the directory first to find which files even have queued `[ ]` items and only slice those.
+   - Skip `Wiki/wiki/people/history/` entirely — it's cold archive, never a staleness signal.
    - Find the `## Next Catchup Agenda` block (skip files without one)
    - For each unchecked `[ ]` item, note: who, what, how long it's been queued (look at the agenda block's surrounding context — was it added before the most recent `Key Interactions` entry that postdates it?)
    - Flag items older than 14 days as **STALE** — either the question isn't important enough to ask, or there's no scheduled meeting to ask it in
 
-3. **Scan project status.** For each file in `Wiki/wiki/projects/`:
-   - Read the file
+3. **Scan project status.** For each file in `Wiki/wiki/projects/` — **slice, don't read whole** (the biggest project file can be ~20k tokens on its own): `./bin/section.sh <file> "Status Log" "Open Questions"`.
    - Check the `Status Log` for the most recent entry — if older than 14 days and status is `kickoff` / `planning` / `research`, flag as **DRIFTING**
    - Check `Open Questions` — anything aging? Anything that should have been resolved by now?
 
-4. **Scan Standing Brief TODOs.**
+4. **Scan Standing Brief TODOs + `DOS/Backlog.md`.** This is one of the two commands that reads the Backlog — the carried items there are exactly what staleness detection is for. **Also report `wc -c` on the Brief** (target ≤60k chars) so growth gets caught weekly rather than at the point it forces a compaction.
    - Identify items that have been on the list for more than 14 days
    - Identify "This Week" items that are actually now cross-week
    - Flag completion-state inconsistencies (e.g., a meeting that already happened but its prep TODO wasn't checked)
@@ -32,7 +32,7 @@ Invoked automatically by `/triage` on Mondays (the scan's "This Week's Top 3" fo
    - If older than the expected cadence (weekly for directs, fortnightly for peers/skip-level, monthly for skip-skip), flag as **OVERDUE**
 
 6. **Recognition Drought scan** (directs only; plus any embedded contributors). See DOS/CLAUDE.md "Team recognition & squad visibility":
-   - Check each direct's `## Recognition Log` (and recent `Key Interactions`) for the last time they were acknowledged or given a visibility opportunity (1:1 shout-out, brown bag, demo, showcase, `#kudos`).
+   - Check each direct's `## Recognition Log` — **it lives in `Wiki/wiki/people/history/[name].md`** — and recent `Key Interactions` in the live file, for the last time they were acknowledged or given a visibility opportunity (1:1 shout-out, brown bag, demo, showcase, `#kudos`). Slice the section; don't read either file whole.
    - Flag as **RECOGNITION DROUGHT** any direct with no recognition in ~3 weeks who has had recognition-worthy work in that window (deliveries, catches, mentoring).
    - Counter any known skip-the-back-pat tendency — but **surface, don't manufacture.** If a direct genuinely hasn't had a recognition-worthy moment, don't invent one; note "nothing to surface" rather than reaching. The point is catching *missed* acknowledgement, not hitting a quota.
 
@@ -72,7 +72,7 @@ Invoked automatically by `/triage` on Mondays (the scan's "This Week's Top 3" fo
 *(Directs with recognition-worthy work but no acknowledgement/visibility in ~3 weeks. Surface, don't manufacture — "all recently recognised" is a valid clean result.)*
 | Person | Recognition-worthy work | Last acknowledged | Suggested avenue |
 |--------|------------------------|-------------------|------------------|
-| ... | ... | ... | 1:1 / squad channel / brown bag / demo / `#kudos` (if bar clears) |
+| ... | ... | ... | 1:1 / team channel / brown bag / demo / `#kudos` (if bar clears) |
 
 ## This Week's Top 3
 *(Synthesised from above — what should Monday actually attack?)*
@@ -83,7 +83,7 @@ Invoked automatically by `/triage` on Mondays (the scan's "This Week's Top 3" fo
 
 ## Rules
 
-- Use your locale's date format consistently (e.g. Australian DD/MM/YYYY).
+- Use a consistent date format (DD/MM/YYYY).
 - Don't act on findings — just surface them. Recommended actions are suggestions, not commands.
 - Be terse. This report is a punch-list, not analysis.
 - If nothing is stale/drifting/overdue, say so cleanly — don't manufacture findings.

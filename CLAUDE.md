@@ -19,6 +19,9 @@ This directory contains two systems that work together:
 - Domain questions ([your domain], architecture) → wiki first
 - Ingest a new document → `/wiki-ingest`
 - Health check the wiki → `/wiki-lint`
+- Health check DOS (file sizes, pointers, stale facts, roll-up gaps) → `/dos-lint`, monthly or
+  whenever sessions start feeling slow. Both lints read `bin/` scripts rather than the files
+  themselves — see `DOS/CLAUDE.md` § Context hygiene for why that matters.
 
 ## Memory
 
