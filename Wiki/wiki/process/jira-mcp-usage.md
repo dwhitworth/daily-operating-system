@@ -47,6 +47,92 @@ Map each intake surface / board to its project key. Example shape:
 | Outage / incident tracking | `<HOT_PROJECT>` | service_desk |
 | Bugs | `<BUG_PROJECT>` | service_desk |
 
+## 🔴 Scope at the QUERY, not after — the shared-board rule
+
+**Company-wide boards are shared across every team.** An unscoped pull returns other teams'
+work, which then has to be filtered *in context* — the expensive way to do it, and the way
+that quietly turns a 2-row answer into a 36-row read. **Always scope in the JQL.** Measured
+live on one real instance:
+
+| Board | Unscoped open | Team-scoped | Overfetch |
+|---|---|---|---|
+| `BUG` (High+ priority) | **36** | **2** | **18×** |
+| `HOT` (incidents) | **68** | **12** | **5.7×** |
+| `VULN` | **6** | **2** | **3×** |
+
+**Each board may use a DIFFERENT ownership field — don't assume one works everywhere.** Check
+yours once, write it down here, and let the file do the remembering:
+
+```jql
+# Atlassian Teams field — the value is a UUID. A display string like "Your Squad"
+# silently returns ZERO rows, which reads as "nothing open" rather than as an error.
+project = <BUG_PROJECT> AND cf[10001] = "<TEAM_UUID>" AND statusCategory != Done
+project = <HOT_PROJECT> AND cf[10001] = "<TEAM_UUID>" AND statusCategory != Done
+
+# A plain "Squad" select list — here the string value DOES work
+project = <VULN_PROJECT> AND "Squad[Select List (multiple choices)]" = "Your Squad" AND statusCategory != Done
+
+# Single-team projects need no ownership filter
+project = <YOUR_PROJECT> AND sprint in openSprints()
+```
+
+**🔴 Prefer the Team/Squad field over `assignee in (<accountIds>)`.** Assignee-scoping has two
+failure modes, both verified live:
+- **Unassigned work vanishes.** 8 of those 36 open High+ bugs had no assignee — untriaged
+  tickets haven't been assigned yet, and untriaged is exactly what a triage should surface.
+- **Team-owned work assigned to someone outside the team vanishes.** An incident ticket owned
+  by the team via the Team field but assigned to a peer manager is missed by every
+  assignee-scoped query.
+
+Use `assignee in (...)` only when the question is genuinely *per-person* ("what is X working
+on", per-direct load). Use the Team field when the question is *"what does my team own."*
+
+**Also trim the payload.** `fields` defaults to ~13 fields including `description` — pass an
+explicit list. Every assignee object carries four avatar URLs and every status a full category
+object, so even a 2-ticket response is a couple of thousand characters.
+
+```
+fields: ["summary", "status", "assignee", "priority", "issuetype"]   # standup shape
+fields: ["summary", "status", "priority", "duedate"]                  # due-date scan
+searchResultMode: "count"                                             # when only the NUMBER matters
+```
+
+**`searchResultMode: "count"` returns `totalCount` and an empty issues array** — use it for
+count deltas and "is anything overdue" checks, where a number answers the question and the
+ticket list is noise. Add `maxResults` when a list is needed but unbounded growth isn't.
+
+> If you run pi, `.pi/extensions/jira-scope-guard.ts` **blocks** an unscoped query against the
+> boards named in its `CONFIG` block. Fill that in and the rule stops depending on memory.
+
+---
+
+## 🔴 List queries TRUNCATE SILENTLY — cross-check the number with `count` mode
+
+**Verified live, and it manufactured a phantom finding before it was caught.** A sprint query
+with an explicit `fields` list returned **15 issues with no truncation notice**. The identical
+JQL with `searchResultMode: "count"` returned **`totalCount: 20`**.
+
+The five missing rows were **all the `In Progress` tickets**, so the truncated read looked
+exactly like "someone pulled every in-flight ticket out of the sprint this afternoon" — a real,
+reportable event that had not happened. Truncation is not random: it drops a contiguous tail, so
+the omission lands on whatever the `ORDER BY` puts last and therefore reads as a pattern.
+
+**The rule: whenever a list result is going to be counted, characterised, or compared against an
+earlier sweep, run the same JQL twice — once for rows, once for `count`. If they disagree, the
+list is short.** `fullResultPath` responses are the safe case (the temp file holds everything);
+it is the inline-`content` responses that quietly clip.
+
+**Don't diagnose sprint membership from the sprint custom field** — it can return empty even for
+tickets the same query just returned as being in the open sprint. Test membership with JQL
+instead: `key = <TICKET> AND sprint in openSprints()` (and `futureSprints()` /
+`closedSprints()` to locate it).
+
+**When the payload is big, don't parse it in context.** `bin/jira-summarise.sh` takes either the
+MCP result envelope or the spilled `fullResultPath` file and prints a standup-shaped table, so
+the raw JSON never enters the conversation.
+
+---
+
 ## Common queries (canonical recipes)
 
 All queries call `searchJiraIssuesUsingJql` with your `cloudId`. The recipes below are the
@@ -111,6 +197,17 @@ closures. A closure can invalidate a live escalation cited in a prep doc. Withou
 query, a stale escalation lands in a 1:1. (Learned the hard way: a bug that closed as
 "Resolved (No code change)" was missed by every Done-filtering query and nearly surfaced as
 a live escalation.)
+
+**🔴 Filter on `statusCategoryChangedDate`, NEVER on `resolved`.** Bulk transitions set
+`status` without setting `resolution`, so `resolved` is empty on anything closed as
+`Won't Do` — and on this exact query that produced **zero rows while three tickets read
+`Done`**, two of which were live agenda items in that morning's card. That is the precise
+failure this recipe exists to prevent, caused by the recipe itself. **A zero here means
+check the field, not "nothing closed."**
+
+```jql
+(project in (<YOUR_PROJECT>, <BUG_PROJECT>, <OPS_PROJECT>)) AND statusCategory = Done AND statusCategoryChangedDate >= "<since>" ORDER BY statusCategoryChangedDate DESC
+```
 
 ### 10. Prep-doc live-state check
 For any `1-1-prep-*.md` in the next ~7 days, re-verify the state of every ticket cited as a

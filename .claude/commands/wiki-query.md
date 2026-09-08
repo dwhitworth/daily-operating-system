@@ -1,12 +1,12 @@
 # Wiki Query
 
-Answer a question using the wiki knowledge base. The question is: $ARGUMENTS
+Answer a question using the the wiki knowledge base. The question is: $ARGUMENTS
 
 ## Process
 
 1. **Search the wiki.** Read `Wiki/index.md` to identify candidate pages relevant to the question. Read those pages.
 
-2. **Synthesise an answer.** Provide a direct, structured answer with citations to wiki page paths (e.g. `[wiki/domain/<topic>.md]`).
+2. **Synthesise an answer.** Provide a direct, structured answer with citations to wiki page paths (e.g. `[wiki/domain/[topic].md]`).
 
 3. **Flag confidence:**
    - **HIGH** — answer drawn from dedicated wiki page(s) with primary sources

@@ -21,7 +21,23 @@
       "mcp__atlassian__getConfluencePageInlineComments",
       "mcp__atlassian__getConfluenceCommentChildren",
       "mcp__atlassian__lookupJiraAccountId",
-      "mcp__atlassian__fetch"
+      "mcp__atlassian__fetch",
+      "mcp__atlassian__read_jira_widget_ext_apps",
+      "mcp__atlassian__read_jira_widget_openai",
+      "mcp__atlassian__read_confluence_widget_ext_apps",
+      "mcp__atlassian__read_confluence_widget_openai"
+    ]
+  },
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/battle-card-reminder.sh"
+          }
+        ]
+      }
     ]
   }
 }

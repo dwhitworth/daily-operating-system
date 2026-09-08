@@ -16,7 +16,7 @@ This directory contains two systems that work together:
 ## How to use both systems together
 
 - Morning Triage / War Room / Daily Wrap → DOS mode (read Standing Brief + latest journal)
-- Domain questions ([your domain], architecture) → wiki first
+- Domain questions ([your domain], architecture) → Wiki first
 - Ingest a new document → `/wiki-ingest`
 - Health check the wiki → `/wiki-lint`
 - Health check DOS (file sizes, pointers, stale facts, roll-up gaps) → `/dos-lint`, monthly or
@@ -25,8 +25,7 @@ This directory contains two systems that work together:
 
 ## Memory
 
-Persistent cross-session memory is the auto-memory store at
-`~/.claude/projects/<project-slug>/memory/` (the `<project-slug>` directory is
-auto-generated per project by the Claude Code harness).
+Persistent cross-session memory is your agent's per-project auto-memory store
+(Claude Code: `~/.claude/projects/<project-slug>/memory/`).
 `MEMORY.md` in that directory is the index and is auto-loaded into every session.
 Update it when something is worth remembering across conversations.

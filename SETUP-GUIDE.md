@@ -1,27 +1,54 @@
 # Setup Guide — stand up your own DOS + Wiki
 
-**What this builds:** a single directory you open with [Claude Code](https://claude.com/claude-code)
-that holds your **Daily Operating System** (operational intelligence — triage, war room, wraps)
-and a **Wiki** (compounding domain/people knowledge), driven by `CLAUDE.md` instruction files and
-slash commands. There's no app to run — the "software" is the prompts, the file conventions, and
-the discipline they encode.
+**What this builds:** a single directory you open with a terminal coding agent that holds your
+**Daily Operating System** (operational intelligence — triage, war room, wraps) and a **Wiki**
+(compounding domain/people knowledge), driven by `CLAUDE.md` instruction files, slash commands,
+shell scripts and agent extensions. There's no app to run — the "software" is the prompts, the
+file conventions, and the guardrails that make the conventions stick.
 
 The fastest path: **clone this repo, keep the framework files, fill in your context, delete the
 `_examples/`.** The phases below walk through what each piece is and how to make it yours.
 
+A note on voice before you start: throughout these files, **"the operator" means you.** The
+framework is written in the third person so it never collides with the "you" that addresses the
+assistant.
+
 ---
 
-## Prerequisites
+## Phase 0 — Choose your harness
+
+The framework ships for **both** of these, from one set of definitions. You can run either, or
+both against the same directory.
+
+| | [Claude Code](https://claude.com/claude-code) | [pi](https://github.com/earendil-works/pi-coding-agent) |
+|---|---|---|
+| Commands live in | `.claude/commands/*.md` | `.pi/prompts/*.md` |
+| Board reminder | `UserPromptSubmit` hook | `battle-card-reminder` extension |
+| Tracker permissions | allowlist in `.claude/settings.json` | `jira-scope-guard` extension |
+| Blocking guards (whole-file people reads, unscoped JQL, gated writes) | ✗ | ✓ |
+| `today` tool, session widget, autocommit, `/pickup` | ✗ | ✓ |
+
+**If you only want one:** Claude Code is the lower-setup path and everything in the core loop
+works. pi additionally *enforces* the hygiene rules at the moment of the mistake, which is the
+difference between a rule you wrote down and a rule that holds.
+
+**If you run both:** the command definitions are duplicated on purpose (each harness reads its
+own directory), and they drift. `bin/dos-lint.sh` has a `COMMAND-COPY DIVERGENCE` section that
+reports it — the two legitimate differences (pi's frontmatter block, harness-specific skill
+paths) are normalised away, so anything it reports is real. Fix the stale side; a stale command
+re-injects its defect on every run, in one harness only, which is exactly why it's invisible.
 
 ```bash
-# 1. Node.js 18+ required
+# 1. Node.js 18+ required either way
 node --version
 
-# 2. Install Claude Code
+# 2a. Claude Code
 npm install -g @anthropic-ai/claude-code
-
-# 3. Authenticate (Claude subscription or Anthropic API key)
 claude          # follow the OAuth prompt on first launch
+
+# 2b. pi
+npm install -g @earendil-works/pi-coding-agent
+pi              # extensions in .pi/extensions/ auto-load from the project directory
 ```
 
 ---
@@ -35,43 +62,38 @@ git clone <this-repo> ~/dos
 cd ~/dos
 ```
 
-What you're starting with:
+Set your locale, once, in your shell profile. The date helpers and scripts default to
+Australia/Sydney; the DOS house convention for written dates is DD/MM/YYYY either way:
 
-```
-~/dos/
-├── CLAUDE.md                  ← Root context — describes both systems (loaded every session)
-├── bin/
-│   ├── dos-lint.sh            ← Cheap health check (reports sizes/counts, loads no file bodies)
-│   └── section.sh             ← Print only named H2 sections of a file
-├── DOS/
-│   ├── CLAUDE.md              ← Operating modes + disposition rubric + context hygiene
-│   └── _examples/             ← Fictional "Acme Rockets" seed — Standing Brief, journal, roll-up
-├── Wiki/
-│   ├── CLAUDE.md              ← Wiki operating rules and schema
-│   └── wiki/
-│       ├── people/_template.md   ← Person-page schema
-│       ├── people/_examples/     ← Fictional seed people files
-│       └── process/jira-mcp-usage.md
-└── .claude/
-    └── commands/              ← The 11 slash commands that drive everything
+```bash
+export DOS_TZ=America/New_York      # any IANA zone
+export DOS_LOCALE=en-US             # affects weekday + tz-abbreviation rendering
+export DOS_CALENDAR=primary         # the calendar gcalcli should write to
 ```
 
 > **Two things this framework does NOT use** (in case you've seen an older layout):
 > - **No `DOS/People/` directory.** People are the single source of truth in `Wiki/wiki/people/`.
-> - **No `DOS/Memory/` directory.** Cross-session memory is Claude Code's own per-project
->   auto-memory store (see Phase 6).
+> - **No `DOS/Memory/` directory.** Cross-session memory is the harness's own per-project
+>   auto-memory store (see Phase 7).
 
 ---
 
 ## Phase 2 — Encode your context (`DOS/CLAUDE.md`)
 
 This is the **highest-leverage edit.** Open `DOS/CLAUDE.md` and fill in the **Standing Context**
-block — role, company, stack, reporting lines, guardrails. The placeholders (`[Company]`,
-`[your manager]`, `[your domain]`, …) show exactly what to replace.
+block — role, company, stack, reporting lines, guardrails. Every `[placeholder]` is a thing only
+you can write.
+
+Pay particular attention to the last guardrail. The default list (reliability-first, low-ego,
+metric-driven) is a reasonable general one, but the *domain* guardrail is deliberately blank:
+name the place where a quality issue in your world is actually a safety or trust issue.
+"Geospatial accuracy is a product safety issue." "PII never leaves the VPC." "Accessibility is a
+legal requirement." The assistant will hold you to whatever you write, so make it the one that
+actually costs money when it's wrong.
 
 Leave the rest of `DOS/CLAUDE.md` alone at first — the disposition rubric, context-hygiene rules,
-and operating-mode definitions are the framework, and they work out of the box. Read them once so
-you know what the assistant is enforcing; tune later.
+layout budgets and operating-mode definitions are the framework, and they work out of the box.
+Read them once so you know what the assistant is enforcing; tune later.
 
 Do the same light pass on the **root `CLAUDE.md`** (swap `[Company]` and `[your domain]`) and
 **`Wiki/CLAUDE.md`** (already generic — usually no edit needed).
@@ -80,7 +102,7 @@ Do the same light pass on the **root `CLAUDE.md`** (swap `[Company]` and `[your 
 
 ## Phase 3 — Seed the Wiki
 
-Create the two index files the Wiki commands expect. Open Claude Code from the root and paste:
+Create the two index files the Wiki commands expect. Open your agent from the root and paste:
 
 ```
 Read Wiki/CLAUDE.md first. Then scaffold the wiki:
@@ -106,18 +128,29 @@ them with citations, and `/wiki-lint` health-checks the wiki.
 
 ## Phase 4 — Seed the DOS
 
-The `_examples/` directories show the target shape. To start your own:
+`DOS/_templates/` holds the starter shapes; `DOS/_examples/` shows them filled in. To start your
+own:
 
 1. **Standing Brief.** Copy `DOS/_examples/Standing Brief.md` to `DOS/Standing Brief.md` and
    replace its contents with your real (minimal) state — role context, this-week TODOs, any
    projects in flight. Keep it small; it loads every session. (See `DOS/CLAUDE.md` § Context
    hygiene for why.)
-2. **People files.** For each person you work with repeatedly, create
+2. **Battle Board.** Copy `DOS/_templates/Battle-Board.md` to `DOS/Battle-Board.md`. This is the
+   one file you'll actually work off all day, so open it in a pinned tab now. **Keep its
+   `## Contract` section** — it's what stops the file degrading, and it's what you re-read when
+   the board starts drifting.
+3. **The cold surfaces.** Copy the rest of `DOS/_templates/` as you need them —
+   `Backlog.md` (not-this-week items), `Brag.md` (wins log), `Growth.md` (behaviours in
+   development), `Opportunities.md` (org-level theses). None of these load at triage; the
+   assistant appends to them without being asked, so read each template's conventions block
+   once so you agree with the bar it's applying.
+4. **People files.** For each person you work with repeatedly, create
    `Wiki/wiki/people/<name>.md` from `Wiki/wiki/people/_template.md`. The `_examples/` files
-   (`alex-rivera.md`, `sam-chen.md`, `jordan-blake.md`) show the hot/cold split in practice.
-3. **Journal.** Nothing to create — `/daily-wrap` writes the first entry to
+   (`sam-chen.md` the manager, `alex-rivera.md` a direct, `jordan-blake.md` a peer EM) show the
+   hot/cold split in practice.
+5. **Journal.** Nothing to create — `/daily-wrap` writes the first entry to
    `DOS/Journal/[year]/week-[week]/[date].md`.
-4. **Delete the seeds.** Once your own files exist, delete `DOS/_examples/` and
+6. **Delete the seeds.** Once your own files exist, delete `DOS/_examples/` and
    `Wiki/wiki/people/_examples/` so the fictional data never gets mistaken for real context.
 
 ---
@@ -132,53 +165,73 @@ Run from inside your directory so connectors are scoped to the project:
 ```bash
 cd ~/dos
 
-# Google Calendar (for triage's per-meeting prep)
-claude mcp add --transport http google-calendar --scope project https://<your-calendar-mcp-endpoint>/mcp
-
-# Issue tracker — Atlassian's hosted endpoint shown; Linear/GitHub have their own MCP servers
+# Claude Code
+claude mcp add --transport http google-calendar --scope project https://<your-calendar-mcp>/mcp
 claude mcp add --transport http atlassian --scope project https://mcp.atlassian.com/v1/sse
+claude            # then /mcp to authenticate each connector
+
+# pi — declare servers in .pi/settings.json, then:
+pi                # then /mcp to authenticate
 ```
 
-Then authenticate inside Claude Code:
+Linear, GitHub Issues and the rest have their own MCP servers; the query *shapes* in `/triage`,
+`/daily-wrap` and `/weekly-rollup` teach the technique (server-side scoping, explicit field
+lists, count-mode) — adapt the project keys and field IDs to your own tracker. See
+`Wiki/wiki/process/jira-mcp-usage.md` for the read-only/write posture and the query recipes.
 
-```bash
-claude       # launch from ~/dos/
-/mcp         # opens the MCP auth panel — auth each connector
-```
+**Two guardrails ship configured, and both need your identifiers:**
 
-See `Wiki/wiki/process/jira-mcp-usage.md` for the read-only/write posture and the query recipes
-the commands use. The issue-tracker query *shapes* in `/triage`, `/daily-wrap`, and
-`/weekly-rollup` teach the technique (server-side scoping, explicit field lists, count-mode) —
-adapt the project keys and field IDs to your own tracker.
+- **`.claude/settings.json`** pre-approves the Atlassian *read* tools so triage and wraps don't
+  prompt on every call, while every *write* still requires confirmation. It contains no
+  account-specific identifiers. Replace the `mcp__atlassian__*` entries if you use a different
+  tracker.
+- **`.pi/extensions/jira-scope-guard.ts`** has a `CONFIG` block at the top — the Team UUID and
+  squad name that scope your company-wide boards, and the board keys themselves. It ships with a
+  zeroed UUID, so **the scope check does nothing until you fill it in**. The reason it exists:
+  querying a shared board unscoped returned 18× the rows, and the fix belongs *in the JQL*, not
+  in a post-filter the model does in context.
 
-**A read-only permission allowlist ships in `.claude/settings.json`** — it pre-approves the
-Atlassian *read* tools (search, get-issue, get-page, …) so triage and wraps don't prompt on every
-call, while every *write* (create/edit/transition/comment) still requires explicit confirmation.
-It contains no account-specific identifiers. Trim or extend it for your own connectors; if you use
-a non-Atlassian tracker, replace the `mcp__atlassian__*` entries with your server's read tools.
-
-> **Never hard-code cloud IDs, account IDs, or project keys into committed config.** They're
-> account-specific and sensitive — let the connector resolve them at runtime.
+> **Never hard-code cloud IDs, account IDs, or project keys into committed config** beyond that
+> one CONFIG block. They're account-specific and sensitive — let the connector resolve the rest
+> at runtime.
 
 ---
 
-## Phase 6 — Memory
+## Phase 6 — Understand what will block you
 
-Cross-session memory is **Claude Code's own per-project auto-memory store** — a `memory/`
-directory the harness maintains, with a `MEMORY.md` index auto-loaded into every session. You
-don't create it by hand; the assistant writes to it when something is worth remembering across
+pi's extensions are guardrails, not decoration, and two of them **block**. That's intentional,
+and both tell you the fix in the error:
+
+- **`people-file-read-guard`** refuses a whole-file `read` of `Wiki/wiki/people/<name>.md` and
+  points at `./bin/section.sh <file> "Next Catchup Agenda" "Open Loops" "Current Focus"`. People
+  files run 5–12k tokens each; reading four whole ones is the single biggest avoidable cost in a
+  triage. A read with an explicit `offset`/`limit` passes.
+- **`jira-scope-guard`** refuses unscoped JQL against your shared boards, and prompts for
+  confirmation on every tracker write.
+
+If you find yourself fighting one of these, that's the signal to change the rule in the file,
+not to work around it in the moment.
+
+---
+
+## Phase 7 — Memory
+
+Cross-session memory is **the harness's own per-project auto-memory store** — a `memory/`
+directory it maintains, with a `MEMORY.md` index auto-loaded into every session. You don't
+create it by hand; the assistant writes to it when something is worth remembering across
 conversations (durable preferences, who-is-who, project constraints).
 
 Rule of thumb: **durable facts → memory; the dated record → the journal.**
 
 ---
 
-## Phase 7 — First-run checklist
+## Phase 8 — First-run checklist
 
 ```
-□ Open the directory with Claude Code (from ~/dos/, run: claude)
+□ Open the directory with your agent (from ~/dos/: `claude` or `pi`)
 □ Confirm the CLAUDE.md files loaded — the assistant should reference both DOS and Wiki
-□ Run /triage — with the seed examples in place, it should build a battle card
+□ On pi: confirm the session-status widget shows today's date and week
+□ Run /triage — with the seed examples in place, it should build a battle card and a board
 □ Say something in "war room" mode, then run /daily-wrap — confirm a journal entry is written
    to DOS/Journal/... and the Standing Brief is updated
 □ Run /wiki-query on one of your seed pages — confirm a cited answer with a confidence flag
@@ -193,7 +246,7 @@ Rule of thumb: **durable facts → memory; the dated record → the journal.**
 
 ```bash
 # Morning
-claude
+pi                   # or: claude
 > /triage
 
 # Through the day — stream-of-consciousness into "war room" mode
@@ -202,8 +255,12 @@ claude
 # Ingest a document you received
 > /wiki-ingest Wiki/raw/docs/architecture-overview.pdf
 
+# Context getting long mid-task? (pi)
+> /handoff           # distil the state to .pi/handoffs/
+> /pickup            # resume in a fresh, cheap session
+
 # End of day
-> /daily-wrap        # writes the journal, updates the Brief, commits
+> /daily-wrap        # writes the journal, updates the Brief, rebuilds the board, commits
 ```
 
 Weekly, `/weekly-scan` (Monday hygiene) and `/weekly-rollup` (Friday synthesis) keep the system

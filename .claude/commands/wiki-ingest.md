@@ -1,6 +1,6 @@
 # Wiki Ingest
 
-Ingest a raw source into the wiki. The source path is: $ARGUMENTS
+Ingest a raw source into the the wiki. The source path is: $ARGUMENTS
 
 ## Process
 
@@ -11,7 +11,7 @@ Ingest a raw source into the wiki. The source path is: $ARGUMENTS
    - 3-5 key takeaways or facts worth capturing
    - Which existing wiki pages this informs or updates
    - Any new pages that should be created
-
+   
    Wait for user confirmation or guidance on emphasis before proceeding.
 
 3. **Write or update wiki pages.** For each affected page:

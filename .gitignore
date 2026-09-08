@@ -1,2 +1,20 @@
+# macOS
 .DS_Store
+._*
+
 *.log
+
+# Your own content — this repo ships scaffolding only. Uncomment the lines that
+# match how you use it, so a private journal never lands in a public fork.
+# DOS/Journal/
+# DOS/Standing Brief.md
+# DOS/Battle-Board.md
+# Wiki/wiki/people/
+# Wiki/raw/
+
+# pi session handoffs — ephemeral, local-only (see /handoff + /pickup)
+.pi/handoffs/
+
+# Harness-local settings that are per-machine, not per-project
+.claude/settings.local.json
+.pi/settings.local.json

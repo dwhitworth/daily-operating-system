@@ -22,9 +22,10 @@ pitch, not a formal conference talk). Tone: concrete, personal, a little wry, en
 Lead with a real problem and real numbers, not with architecture. Confident but not grandiose.
 
 ### What the thing is (context for you, don't put this verbatim on a slide)
-It's a file-based "operating system for the engineering-management job" that runs entirely inside
-Claude Code (an agentic CLI). There's no app — the "software" is markdown instruction files
-(`CLAUDE.md`), slash-command process definitions, and file conventions. Two coupled systems: **DOS/**
+It's a file-based "operating system for the engineering-management job" that runs inside a terminal
+coding agent (Claude Code or pi). There's no app — the "software" is markdown instruction files
+(`CLAUDE.md`), slash-command process definitions, file conventions, and a set of shell scripts and
+agent extensions that enforce the conventions at the moment they'd otherwise be broken. Two coupled systems: **DOS/**
 (daily operational loop — triage, war-room, wrap) and a **Wiki/** (a compounding knowledge base
 where people and domain context accumulate). The value is a set of hard-won disciplines, each one
 a scar from a specific failure.
@@ -71,7 +72,7 @@ agentic CLI loads automatically.
 Headline: "Two systems that work together." A simple two-box diagram:
 - Box 1: **DOS/** — "Operational intelligence. The daily loop." (triage · war room · wrap · roll-up)
 - Box 2: **Wiki/** — "Compounding knowledge. People + domain context that accumulates."
-Below both, a thin bar: "Driven by CLAUDE.md instruction files + slash commands + a couple of shell scripts."
+Below both, a thin bar: "Driven by CLAUDE.md instruction files + slash commands + shell-script lints + agent extensions that block the expensive mistake."
 Speaker notes: DOS is what I do today; the Wiki is what I know, and it gets smarter every week.
 
 **Slide 6 — The daily loop.**
