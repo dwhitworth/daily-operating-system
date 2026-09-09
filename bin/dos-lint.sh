@@ -91,6 +91,32 @@ say "Board     lines: $(count '^- ' "$BOARD")   today OPEN: $(printf '%s' "$boar
 # non-zero, which is how a check gets ignored. Measure above the Contract only.
 board_items=$(sed '/^## .*Contract/,$d' "$BOARD" 2>/dev/null)
 say "Board sub-bullets (must be 0): $(printf '%s' "$board_items" | grep -c '^  \+- ' || true)  (§ Contract excluded — it documents the format)"
+
+# --- NEXT SLOT: the one line they read first. A wrong or stale Next is worse than none,
+# --- because they acts on it without re-reading Today.
+next_block=$(sed -n '/^## .*Next$/,/^## /p' "$BOARD" 2>/dev/null | grep '^- ' || true)
+next_count=$(printf '%s' "$next_block" | grep -c '^- ' || true)
+today_first=$(printf '%s' "$board_today" | grep -m1 '^- \[ \]' || true)
+today_open=$(printf '%s' "$board_today" | grep -c '^- \[ \]' || true)
+# Compare on substance, not decoration: Next may carry the marker or not.
+norm() { printf '%s' "$1" | sed 's/🔴//g; s/⭐//g; s/⚠️//g; s/  */ /g; s/ *$//'; }
+if [ -z "$next_block" ] && [ "$next_count" -eq 0 ]; then
+  say "Next slot: ❌ MISSING — add '## ▶ Next' above Today with exactly one item"
+elif [ "$next_count" -ne 1 ]; then
+  say "Next slot: ❌ holds $next_count items, must hold exactly 1"
+elif [ "$(norm "$next_block")" != "$(norm "$today_first")" ]; then
+  say "Next slot: ❌ does not match Today's top open line — one of them is stale"
+  say "    next : $next_block"
+  say "    today: $today_first"
+else
+  say "Next slot: ✅ one item, matches Today's top line"
+  case "$next_block" in
+    *[Ww]aiting*|*"is raising"*|*"when "*|*"once "*|*"chasing"*)
+      say "    🟡 reads like a wait, not an action — Next must be startable now" ;;
+  esac
+fi
+[ "$today_open" -gt 8 ] && say "Today cap: ❌ $today_open open, cap is 8 — the cap EVICTS, name what leaves" \
+                        || say "Today cap: ✅ $today_open/8 open"
 else
 say "Board: no $BOARD yet — copy DOS/_templates/Battle-Board.md"
 fi
@@ -338,6 +364,37 @@ say "     diff .claude/commands/<cmd>.md .pi/prompts/<cmd>.md"
 say "  The count does NOT say which copy is right — read the diff. Usually one copy got a"
 say "  fix and the other did not, so the newer side wins; genuine harness differences are"
 say "  normalised out above and should never appear here."
+
+hdr "OWED DEBT RADAR (every OWED line needs a size + a since date; >14d escalates)"
+owed_total=0; owed_bad=0; owed_old=0
+today_s=$(date +%s)
+while IFS= read -r line; do
+  [ -z "$line" ] && continue
+  owed_total=$((owed_total + 1))
+  file=${line%%:*}; text=${line#*:}
+  who=$(basename "$file" .md)
+  has_size=$(printf '%s' "$text" | grep -cE '`?(5m|30m|block)`?' || true)
+  since=$(printf '%s' "$text" | sed -nE 's|.*since ([0-9]{2})/([0-9]{2}).*|\2-\1|p' | head -1)
+  if [ "$has_size" -eq 0 ] || [ -z "$since" ]; then
+    owed_bad=$((owed_bad + 1))
+    miss=""
+    [ "$has_size" -eq 0 ] && miss="size"
+    [ -z "$since" ] && miss="${miss:+$miss + }since"
+    say "  ❌ $who — missing $miss"
+  else
+    y=$(date +%Y)
+    s=$(date -j -f %Y-%m-%d "$y-$since" +%s 2>/dev/null || date -d "$y-$since" +%s 2>/dev/null || echo "$today_s")
+    age=$(( (today_s - s) / 86400 ))
+    if [ "$age" -gt 14 ]; then
+      owed_old=$((owed_old + 1))
+      say "  🟡 $who — ${age}d old, promote to Today regardless of the next 1:1"
+    fi
+  fi
+done <<EOF
+$(grep -rn 'OWED' Wiki/wiki/people/*.md 2>/dev/null | grep -v '_template.md' || true)
+EOF
+say "OWED lines: $owed_total total, $owed_bad untagged, $owed_old over 14 days"
+[ "$owed_total" -lt 4 ] && say "  🟡 only $owed_total tagged across all people files — under-tagging is why debts surface at prep"
 
 hdr "SHOWCASE COVERAGE"
 ls DOS/Showcase/ 2>/dev/null | sed 's/^/  /'

@@ -16,6 +16,8 @@ Start the day. Read the operational state, pull today's calendar, and produce a 
 
 4. **Pull today's calendar.** Run `gcalcli agenda "[today]" "[tomorrow]" --details all` to get today's events with attendees and details.
 
+   **Also pull the next 5 working days** for the debt radar (step 7): the same `gcalcli agenda` call with a `[today]` → `[today+7]` window. Recurring 1:1s are the real deadline for every `🅾️ OWED` item, and they have to be visible days out rather than the morning of. One extra call, same tool, same flags.
+
    **Optional ~10-second look-back:** Glance at yesterday's `Timebox -` events (`gcalcli agenda "[yesterday]" "[today]"`) purely as calibration — did the boxes match reality? No judgment, no slippage flagging. This is bandwidth-learning over weeks, not a daily audit. Skip if it ever feels heavy.
 
 5. **Pull live sprint state from Jira MCP** (when the Atlassian MCP is connected):
@@ -55,7 +57,16 @@ Start the day. Read the operational state, pull today's calendar, and produce a 
    - **`ASK`** — the operator wants to put it to them. **Discharged by the meeting happening.** Surface it as an agenda bullet. Done.
    - **`🅾️ OWED`** — *they* asked *them*. **The meeting does not discharge it, it exposes it.** If the answer does not already exist, the meeting is a debt coming due.
 
+   **DEBT RADAR — run this for the next 5 working days, not just today.** For every person with a 1:1 in the 7-day agenda pull, slice their `Next Catchup Agenda` (`./bin/section.sh`) and read the `🅾️ OWED` lines. Compare each one's `size` tag against the working time left before that slot:
+   - `block` with fewer than 2 clear days → surface it **today**, on `## Today`, naming the venue and its date.
+   - `30m` → surface the day before, or today if tomorrow is already full.
+   - `5m` → `## Under 5`. No earlier surfacing needed.
+   - **Any OWED line with no `size` or no `since` tag: tag it now.** An untagged debt cannot be ranked, so it defaults to invisible.
+   - **Any OWED item older than 14 days by its `since` date goes on `## Today` regardless of when the 1:1 is.** Age is the importance signal for debts to people with no recurring slot: projects, peer managers, stakeholders.
+   - Report the radar as its own card section, never mixed into the per-meeting agendas. The point is to see the debt *before* its venue appears on the calendar.
+
    **For every `OWED` item on today's meetings, do this before writing the card:**
+
    1. **Check whether the answer exists** (in the Brief, a journal entry, a wiki page, or Jira).
    2. **If it does not, put it on `## Today` as its own item, ranked ABOVE the meeting**, with the lead time stated: *"You owe Priya two answers at 11:00. Neither exists. 2h45m."*
    3. **Decompose it into the actual work.** *"Does a GTM wishlist exist?"* is a ten-minute question to Nina, not a discussion topic — it never needed the 1:1 at all. Say what the work is and roughly how long.
@@ -103,9 +114,12 @@ Start the day. Read the operational state, pull today's calendar, and produce a 
     **C. Meeting outcomes — `DOS/Journal/[year]/week-[week]/meetings-[YYYY-MM-DD].md`.** Created lazily, the first time a transcript or meeting summary is processed. Holds the full texture: who said what, verbatim fragments, decisions, what went unraised. **This is the surface the operator actually reads** — they rarely reads the wrap. **Never append meeting outcomes to the battle card.** Function split + why the journal can't become a pointer: `/daily-wrap` § Three day-surfaces.
 
     **A. The Battle Board — `DOS/Battle-Board.md` — is the ONE surface the operator works off.**
-    - **`## Today` must be the first thing under the H1.** Contract lives at the FOOT of the board, never the head — a 30-line preamble above the list recreates the exact "too verbose to look at" problem the split was meant to fix.
+    - **`## ▶ Next` is the first thing under the H1, then `## Today`.** Contract lives at the FOOT of the board, never the head — a 30-line preamble above the list recreates the exact "too verbose to look at" problem the split was meant to fix.
     - **Stable path, no date in the filename.** They pin it. Never move it into a week folder.
     - Re-cut `## Today` at triage: **max 8 items, one line each, ordered by priority.** No P0/P1 tags — order *is* the priority. 🔴 only for a hard deadline or a person actually waiting.
+    - **`## ▶ Next` holds exactly ONE item: `## Today`'s top line, copied verbatim.** It must be startable now — not waiting on a reply, not gated on a meeting yet to happen. If the top of Today is a wait, pick the highest item that isn't. Re-pick it whenever the board is touched, including mid-day.
+    - **The cap evicts: adding a 9th item means naming what leaves.** Move it to DO/DELIVER or void it. Appending past 8 is what turns an ordered list into an unranked one.
+    - **Entry test for Today: can it be done today, given the calendar?** If not, it is a DO item. Today is what was committed to today, not what matters most in the abstract.
     - **🔴 ONE LINE PER ITEM. NO SUB-BULLETS, EVER.** No why, no how, no quotes, no venue notes. This is the rule that keeps it usable, and it is the rule that failed before: nesting six lines of rationale under a checkbox is what made the old card unreadable.
     - **If an item needs context, the context lives in `DOS/Standing Brief.md`** and the board line just names the action. The board is a lossy index, deliberately.
     - **Tick in place all day** ([ ] → [x]); done items stay where they are. Never prune completions into a summary — accumulating checkboxes are the point, and they are the raw material for the wrap. *(Recorded correction: *tick-in-place*.)*

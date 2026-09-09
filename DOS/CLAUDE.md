@@ -107,6 +107,11 @@ Format: **`If <named event>, then <action>.`** No checkbox, no decay, no guilt. 
 ### The ASK queue is capped
 **~5 open items per person file.** Overflow goes to a `## Parked asks` sub-block in the same file — visible when the file's read, not surfaced at triage. **Decay rule: an ask that survives three catchups un-raised was never load-bearing** — drop it, or promote it to a `## Strategic Notes` line if it's actually a pattern. ⚠️ **Never auto-delete.** Under the *deliberate-parking* rule, surface at `/weekly-scan` as *"these three keep not coming up — kill or park?"* and let the operator call it.
 
+### OWED debts carry a size and a since date
+**Every `🅾️ OWED` line in a `## Next Catchup Agenda` needs two tags: a size (`5m` / `30m` / `block`) and `since DD/MM`, the date the debt was incurred.** Stamped at capture time by `/daily-wrap`, enforced by `/weekly-scan` and `bin/dos-lint.sh`.
+
+**Why both:** urgency is *derived*, not invented — the next 1:1 is the real deadline and the calendar already holds it, so `/triage` looks 5 working days ahead and compares each debt's size against the working time left before its venue. Importance comes from the size plus who is waiting. Age is the backstop for debts to people with no recurring slot (peer managers, stakeholders, projects): **over 14 days by its `since` date, it goes on `## Today` regardless of the calendar.** Added 09/09/2026, after the by-when contract had sat unpopulated for weeks and debts were being discovered at 1:1 prep instead of before it.
+
 ### Where things live
 
 | TODO type | Lives in | Surfaced at |
@@ -193,6 +198,24 @@ When updating people files, sort accordingly. `## Open Loops` in a person file s
   - **Morning Triage** flags when a visibility *event* is on today's calendar (Demo Day, brown bag, showcase) and pulls candidate squad work into the Battle Card so the slot gets used, not missed.
 
 - **`## Recognition Log`** — optional append-only block, living in **`Wiki/wiki/people/history/[name].md`** (moved there 05/08/2026 — one had grown to 13k chars and was loading at every triage for no operational reason). One line per recognition given OR opportunity surfaced: `[DD/MM/YYYY] <what> → <avenue> (given / queued)`. Append straight to history; don't re-create the block in the live file. Doubles as perf-review evidence. Keep it light — it's a tally, not a writeup.
+
+- **🆕 `## Feedback Log`** — the counterpart, added 09/09/2026. Also append-only, also in `history/[name].md`.
+  **Recognition Log = praise given. Feedback Log = corrective or developmental feedback given, and whether it landed.**
+  Format: `[DD/MM/YYYY] <feedback, one line> → <venue> · landed: <yes/no/partial + date, updated later>`
+  - **Why it earns a section, and it is not a nicety:** a leveling or comp case is only defensible if you can
+    show *told them X on this date, they did Y by that date.* Without a log that chain gets reconstructed from
+    memory at exactly the moment it needs to be precise.
+  - **Three failures it prevents:** repeating feedback the person already actioned (which reads as not noticing)
+    · contradicting feedback given earlier · claiming a gap at review time that was never actually raised.
+  - **The `landed` field is the load-bearing part.** It is the only way to tell coaching that works from
+    coaching that is merely repeated — and a run of `landed: no` on the same theme is a signal about the
+    *mechanism*, not the person. ⭐ Specimen: *"speak up more"* never landed with Riya; **designing a slot did.**
+  - ⚠️ **Do not log routine technical direction.** This is developmental feedback about how someone operates,
+    not every code-review comment or steer in a 1:1.
+  - **the operator has one too**, in `Wiki/wiki/people/history/your-name.md`: **feedback they have RECEIVED.**
+    That is distinct from `DOS/Growth.md`, which is their own practice list with mechanisms attached. The log is
+    the raw input; Growth.md is what they decided to do about it. Keep them separate — folding received feedback
+    into a practice list loses who said it and when.
 
 ---
 

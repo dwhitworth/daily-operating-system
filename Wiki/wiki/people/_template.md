@@ -48,7 +48,36 @@ BEHAVIOURAL, so a reorg doesn't invalidate it — an old date here is usually st
      Decay rule: an ask that survives three catchups un-raised was never load-bearing. Drop
      it, or promote it to a `## Strategic Notes` line if it turns out to be a pattern. Never
      auto-delete — /weekly-scan surfaces it as "these three keep not coming up, kill or park?"
-     and the operator calls it. -->
+     and the operator calls it.
+
+     TWO CLASSES, OPPOSITE MECHANICS. Tag every line with one:
+
+       ASK   — you want to put something to them. DISCHARGED by the meeting happening.
+               No prep debt. This is the queue described above.
+
+       OWED  — they asked YOU for something. BLOCKED by the meeting happening; the slot
+               exposes the debt rather than clearing it. The answer has to exist BEFORE
+               the slot, so it must also be a task on DOS/Standing Brief.md with an owner
+               and a by-when.
+
+     OWED lines carry two extra tags, and they are what make a debt visible before its venue:
+
+       size   — the honest time to finish it: `5m`, `30m`, or `block` (needs a protected block).
+       since  — DD/MM, the date the debt was incurred, NOT the date you wrote it down.
+
+     Format:  - [ ] **OWED · `30m` · since DD/MM —** [what they asked for]
+
+     Why bother: importance without a date always loses to whatever is loudest that morning,
+     so DERIVE the date instead of inventing one. The next 1:1 is the real deadline and the
+     calendar already holds it — /triage looks 5 working days ahead and compares each debt's
+     size against the working time left before its slot. A `block` item found with two days
+     left is a different problem from a `5m` item found the same morning, and the size tag is
+     the only thing that separates them.
+
+     Age is the backstop for debts to people you have no recurring slot with (peer managers,
+     stakeholders, projects): over 14 days by its `since` date, it goes on the board's Today
+     regardless of the calendar. Without that, those debts are invisible until someone asks
+     again. -->
 - [ ] [thing to raise next time you talk]
 
 ## Relationships

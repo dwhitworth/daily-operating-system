@@ -34,6 +34,7 @@ style. It is volume, and it makes the artefacts unreadable, which is the whole p
 | Battle Board, one item | **140 characters.** No sub-bullets. No stacked bold. |
 | Battle Board, whole file | ~20k. Over that, prune before adding. |
 | Battle card | **12k.** It is a morning briefing, not a dossier. |
+| Shared-tracker field (planner card `Notes`, Notion table cell) | **4 bullets, ~400 chars.** Scope and constraints only. |
 | Chat reply, normal | Under ~200 words. |
 | Chat reply, explicit debrief/explain | As long as needed, still capped lists, headers to skim. |
 | Any list | **8 items.** More than eight means unranked. Split "now" / "later" or cut. |
@@ -61,6 +62,19 @@ and a fully bolded line is an unbolded line.
 **Restating context that already lives somewhere.** If the Standing Brief holds the why, the
 board line names only the action. If the card holds the detail, chat gives one line and a
 pointer. **Write it once, in the coldest surface that can hold it.**
+
+**Provenance leaking into a shared tracker.** Measured 09/09/2026: the operator cut Cycle Planner card
+`Notes` from ~1,400 bytes to ~250 and from 8 bullets to 2. They removed whole categories, not just
+words. A tracker field answers *what this card is and what constrains it*. It does not carry:
+
+- **Live status.** "14 Done, 3 Ready for Release" is Jira's job, and it is stale within a day.
+- **Who agreed, and when.** Endorsements, decision dates and meeting attribution belong in the Brief.
+- **The argument for the appetite.** Set S/M/L and stop. Don't justify it in the card.
+- **Capacity math.** Points, ranges and committed-versus-available live in the Brief.
+- **Notes to self.** Open questions and flags are TODOs, not squad-facing planner content.
+
+What survives: the phase boundary, named scope, dependencies, the constraint that would break it,
+and ticket IDs for the work itself.
 
 ## What must NOT be compressed
 

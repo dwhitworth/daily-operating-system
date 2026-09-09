@@ -17,8 +17,12 @@ reader: donovan-at-speed
 > re-read whenever the board starts drifting.
 >
 > The bucket names below are a starting set, not scripture. The load-bearing ones
-> are `## Today` (capped, ordered) and `## Contract`. Drop the rest if they don't
+> are `## ▶ Next` (one item), `## Today` (capped, ordered) and `## Contract`. Drop the rest if they don't
 > earn their place in your week.
+
+## ▶ Next
+
+- [ ] <exactly one item: the top line of `## Today`, copied verbatim>
 
 ## 🔥 Today — <Weekday DD/MM>
 
@@ -68,9 +72,21 @@ reader: donovan-at-speed
 - **One line per item. No sub-bullets, ever.** No why, no how, no quotes.
 - If an item needs context, the context lives in `DOS/Standing Brief.md` and the line
   here just names the action.
+- **`## ▶ Next` holds exactly one item and it is the first line of the file.** Copy it verbatim
+  from the top of `## Today`. It must be startable *now*: not waiting on someone's reply, not
+  gated on a meeting that hasn't happened. If the top of Today is a wait, take the highest item
+  that isn't. Re-pick it every time the board is touched, including mid-day.
+  - **Why it exists:** the cap keeps Today short, but on a long board the first line is still
+    the only thing read under pressure. One slot, one action, no scanning.
+  - A stale Next is worse than no Next, because it gets acted on without re-reading Today.
 - `## Today` is capped at **8 OPEN items**, ordered by priority (ticked/void lines don't
   compete for attention, so they don't count). No P0/P1 tags — order is the priority.
   🔴 only for a hard deadline or someone actually waiting. **Most days have none.**
+  - **The cap evicts.** Adding a 9th means naming what leaves and moving it to another bucket
+    or voiding it. Appending past the cap is what silently turns an ordered list into an
+    unranked one, and then the top line stops meaning anything.
+  - **Entry test: can this be done today, given the calendar?** If not, it belongs in DO.
+    Today is what you committed to today, not what matters most in the abstract.
 - **`## Under 5` is the quick-win lane.** Sub-five-minute items that would otherwise rot
   at the bottom of DELIVER/DO forever, because they're never the most important thing.
   - **Exempt from the Today 8** — that's the whole point; they must not compete with real

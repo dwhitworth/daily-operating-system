@@ -134,6 +134,7 @@ synthesise from the conversation as before.
    Whenever the operator said *"I'll find out"*, *"let me get back to you"*, *"I'll ask X"*, *"we should figure that out"*, or left a question of theirs unanswered, that is a **debt**, and it needs to land in **two** places with different jobs:
    - **`DOS/Standing Brief.md § TODOs` — the WORK.** Decomposed into what actually has to be done, with an owner, a venue and a by-when. *"Ask Nina whether a GTM wishlist exists — this week"*, not *"Priya's forward-intake answer"*.
    - **The person's `## Next Catchup Agenda` — the DEBT, tagged `🅾️ OWED`,** so it resurfaces at the next 1:1 whether or not the work happened.
+   - **Stamp both tags on the OWED line as you write it: the size (`5m` / `30m` / `block`) and `since DD/MM`, the date the debt was incurred.** Capture time is the only moment the honest size is known; a debt tagged later gets tagged optimistically. Triage's debt radar ranks off these two fields, so an untagged line is invisible until its 1:1 arrives.
 
    **The person file alone is not enough, and that is the whole failure this step exists to prevent.** A debt recorded only on a person file is a record, not a worklist — nothing forces it forward, and it resurfaces as a topic to discuss rather than a thing to have done. Priya's forward-intake questions sat on their agenda from 28/08 to 07/09 and reached the 1:1 unanswered twice.
 
@@ -161,6 +162,8 @@ synthesise from the conversation as before.
    - **🔴 REBUILD THE FILE WHOLE — and carry over every `[x]` tick and `⛔` void mark from the day.** They work off this file directly; un-ticking their work is a defect. *(Mid-day the rule inverts: targeted in-place edits only. Whole-file rebuild is a wrap operation. See `/todos` step 2.)*
    - **Sweep for board items that never reached the Brief** — anything added mid-day and not promoted gets deleted by the rebuild.
    - **One line per item, no sub-bullets. `## Today` re-cut for tomorrow, max 8, ordered.**
+   - **Re-pick `## ▶ Next` as part of the rebuild** — exactly one item, `## Today`'s top line verbatim, startable without waiting on anyone. It is the first thing they read tomorrow, so a stale Next is worse than none.
+   - **The cap evicts.** If tomorrow's candidates exceed 8, the surplus goes to DO/DELIVER by name. Never append a 9th.
    - **🔴 ORIGINAL RULE, still load-bearing:** Editing the board with find-and-replace produced five distinct defects in one pass (29/07): a duplicated item contradicting itself across two sections, a stale line the Brief had already resolved, and priority tags that no longer sorted. **Regenerate from the Brief; don't reconcile.**
    - **The Standing Brief is the source of truth.** The board is a lossy, terse *view* — one line per open item, no why/how (that stays in the Brief).
    - **Exclude DONE/✅ items** — they collapse to the weekly roll-up, not the board.
