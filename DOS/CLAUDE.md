@@ -63,6 +63,13 @@ external commitments, study, caring responsibilities]. See
 
 **Writing quality for outputs — the `unslop-writing` skill:** Before composing any human-facing text bound for an external surface (Notion pages, Slack messages, the 1:1 Items Discussed / Action Items artefact, emails, Showcase/Brag entries), read `.pi/skills/unslop-writing/SKILL.md` and apply it. It strips AI-default phrasing and bans em-dashes. It does NOT apply to internal battle-card / journal shorthand or to code.
 
+**🔴 Three day-surfaces, split by FUNCTION (09/09/2026) — no fact lives in two of them:**
+- `battle-card-[date].md` — the morning's plan. **Write-once, cold by 10am.** Never append meeting outcomes to it.
+- `meetings-[date].md` — full texture of every meeting: who said what, verbatim fragments, what went unraised. Created lazily on the first transcript. **The surface the operator actually reads.**
+- `[date].md` (journal wrap) — **only what routes forward:** decisions, owners, dates, corrections. **Morning Triage reads the Brief + latest journal entry and nothing else, so the wrap can never become a pointer.**
+
+**🔴 Output LENGTH and DENSITY — the `terse` skill, ALWAYS ON:** read `.pi/skills/terse/SKILL.md` at the start of every session and apply it to **every surface** — chat replies, battle cards, the Battle Board, journal entries, Standing Brief edits, wiki pages. It carries hard numeric caps (board line 140 chars · battle card 12k · any list 8 items · 3 emoji markers per chat reply). Added 09/09/2026 after the card hit **43,589 bytes** against ~18k the two previous days, and a single board line hit **894 characters**. The two skills are different axes and compose: `unslop-writing` controls phrasing on external prose, `terse` controls volume everywhere. Volume control never costs a fact — hedges, corrections, voids, dates, IDs and negations survive; the prose around them shrinks.
+
 ## ☑️ The disposition rubric — what earns a checkbox
 
 **The failure this exists to stop (diagnosed 06/08/2026): the bias isn't toward action, it's toward *checkbox*.** A finding that ends in a task reads as more valuable than one that ends in a fact, so every observation grew a `- [ ]`. Measured that day: **23 open in the Brief, 65 in the Backlog, 231 across person files ≈ 319 total.** Meanwhile the operator's own three real jobs for the week — the Jira automations, the Notion runbooks, the tech talk — were respectively *fragmented across four lines*, **entirely absent from the live list**, and *logged as a booking rather than as prep*. **The list was long AND wrong at the same time.**

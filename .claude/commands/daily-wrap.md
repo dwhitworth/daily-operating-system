@@ -4,9 +4,31 @@ End the day. Synthesise everything from today's conversation into a structured j
 
 **Writing style:** Before writing prose meant to be read or pasted elsewhere (the Executive Summary, and especially the 1:1 Items Discussed / Action Items artefact), read `.claude/skills/unslop-writing/SKILL.md` and apply it — no AI-default phrasing, no em-dashes. The terse internal bullets (timeline, TODOs, tags) don't need it.
 
+**🔴 Length and density:** read `.claude/skills/terse/SKILL.md` and apply it to the journal entry, the board rebuild and everything said in chat. Hard caps live there.
+
+## 🔴 Three day-surfaces, split by FUNCTION (established 09/09/2026)
+
+The wrap reads all three. **No fact lives in two of them**, which is what stops them drifting apart.
+
+| File | Holds | Read by |
+|---|---|---|
+| `battle-card-[date].md` | the morning's plan: calendar, per-meeting prep, sprint state, landmines. **Write-once, cold by 10am.** | the wrap, for planned-vs-actual |
+| `meetings-[date].md` | **full texture of every meeting that ran** — who said what, verbatim fragments, outcomes, what went unraised | **the operator** (this is the surface they actually reads) + the wrap |
+| `[date].md` (journal wrap) | **only what routes FORWARD** — decisions, owners, dates, corrections, defects. Thin. | **tomorrow's Morning Triage**, which reads the Brief + latest journal entry and nothing else |
+
+**Why the journal cannot become a pointer:** Morning Triage reads only the Standing Brief and the
+latest journal entry. Anything left solely in `meetings-*.md` is invisible to tomorrow. So the wrap
+must carry forward every fact that routes a decision — and may safely leave the texture behind.
+
+**Why the card must not absorb meetings:** appending outcomes to it on 09/09 took it to 43.6k, which
+is the exact failure the 01/09 card/board split was created to prevent. It is a briefing, not a log.
+
+If `meetings-[date].md` does not exist for a day (no meetings, or transcripts never came in), skip it —
+synthesise from the conversation as before.
+
 ## Process
 
-1. **Synthesise the day.** Review the entire conversation from today. **Read today's battle card first if one exists** — `DOS/Journal/[year]/week-[week]/battle-card-[YYYY-MM-DD].md` — it's the morning's plan and its in-day updates, so it's the ground truth for what got done vs. planned. Identify:
+1. **Synthesise the day.** Review the entire conversation from today. **Read today's battle card and `meetings-[date].md` first if they exist** — `DOS/Journal/[year]/week-[week]/`. The card is the morning's plan (ground truth for planned vs done); the meetings file is what actually happened in each room. Identify:
    - Key events, meetings, decisions
    - People interactions and new context learned
    - Wins and blockers

@@ -100,8 +100,10 @@ Start the day. Read the operational state, pull today's calendar, and produce a 
 
     Show the drafted commands and proposed times to the operator, get confirmation, then create. Don't weight blown timeboxes — the goal is presence on the calendar, not strict adherence.
 
-11. **Write the day's BRIEFING to a file, then output it. The action list goes on the Battle Board, not the card.**
-    *Split made 01/09/2026: the card was doing two jobs with different lifecycles. The **briefing** (calendar, agendas, landmines) is read once and cold by 10am. The **action list** is touched all day. In one file, the thing the operator touches hourly sat buried under the thing they read once, and the card grew to 16k of nested rationale. Two surfaces now.*
+11. **Write the day's BRIEFING to a file, then output it. The action list goes on the Battle Board, and meeting outcomes go to a third file.**
+    *Split made 01/09/2026, extended 09/09/2026. Three surfaces, three lifecycles: the **briefing** (calendar, agendas, landmines) is read once and cold by 10am · the **action list** is touched all day · the **meeting record** accumulates as transcripts land. In one file, the thing the operator touches hourly sat buried under the thing they read once, and the card grew to 16k of nested rationale. On 09/09 appending meeting outcomes to the card took it to 43.6k, reproducing the same failure.*
+
+    **C. Meeting outcomes — `DOS/Journal/[year]/week-[week]/meetings-[YYYY-MM-DD].md`.** Created lazily, the first time a transcript or meeting summary is processed. Holds the full texture: who said what, verbatim fragments, decisions, what went unraised. **This is the surface the operator actually reads** — they rarely reads the wrap itself. **Never append meeting outcomes to the battle card.** Function split, and why the journal can't become a pointer: `/daily-wrap` § Three day-surfaces.
 
     **A. The Battle Board — `DOS/Battle-Board.md` — is the ONE surface the operator works off.**
     - **`## Today` must be the first thing under the H1.** Contract lives at the FOOT of the board, never the head — a 30-line preamble above the list recreates the exact "too verbose to look at" problem the split was meant to fix.
